@@ -23,7 +23,7 @@ const BrigunaPage2F8N6 = () => {
         <div className="section-title">Pencairan</div>
 
         <div className="congratulations">
-          Selamat <span className="highlight-name">AMMAR SUBAGIA MS</span><br />
+          Selamat <span className="highlight-name">AMMAR SUBAGJA MS</span><br />
           Pinjaman Anda Berhasil Dicairkan
         </div>
 

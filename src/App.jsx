@@ -7,6 +7,7 @@ import BrigunaPage7K2P4 from './components/BrigunaPage7K2P4';
 import BrigunaPage5M8N2 from './components/BrigunaPage5M8N2';
 import BrigunaPage8R4N9 from './components/BrigunaPage8R4N9';
 import BrigunaPageHAD from './components/BrigunaPageHAD';
+import BrigunaPageAL9M6 from './components/BrigunaPageAL9M6';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/revisi-briguna-digital/5M8N2" element={<BrigunaPage5M8N2 />} />
         <Route path="/revisi-briguna-digital/8R4N9" element={<BrigunaPage8R4N9 />} />
         <Route path="/revisi-briguna-digital/8R4N7" element={<BrigunaPageHAD />} />
+        <Route path="/revisi-briguna-digital/AL9M6" element={<BrigunaPageAL9M6 />} />
         <Route path="/" element={<Navigate to="/revisi-briguna-digital/2F8N6" replace />} />
         <Route path="*" element={<Navigate to="/revisi-briguna-digital/2F8N6" replace />} />
       </Routes>

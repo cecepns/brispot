@@ -8,11 +8,14 @@ import BrigunaPage5M8N2 from './components/BrigunaPage5M8N2';
 import BrigunaPage8R4N9 from './components/BrigunaPage8R4N9';
 import BrigunaPageHAD from './components/BrigunaPageHAD';
 import BrigunaPageAL9M6 from './components/BrigunaPageAL9M6';
+import BrigunaPageYMM72 from './components/BrigunaPageYMM72';
+import InputDataPage from './components/InputDataPage';
 
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/input-data" element={<InputDataPage />} />
         <Route path="/revisi-briguna-digital/4K7B9" element={<BrigunaPage4K7B9 />} />
         <Route path="/revisi-briguna-digital/9X3M5" element={<BrigunaPage9X3M5 />} />
         <Route path="/revisi-briguna-digital/2F8N6" element={<BrigunaPage2F8N6 />} />
@@ -21,6 +24,7 @@ function App() {
         <Route path="/revisi-briguna-digital/8R4N9" element={<BrigunaPage8R4N9 />} />
         <Route path="/revisi-briguna-digital/8R4N7" element={<BrigunaPageHAD />} />
         <Route path="/revisi-briguna-digital/AL9M6" element={<BrigunaPageAL9M6 />} />
+        <Route path="/revisi-briguna-digital/YMM72" element={<BrigunaPageYMM72 />} />
         <Route path="/" element={<Navigate to="/revisi-briguna-digital/2F8N6" replace />} />
         <Route path="*" element={<Navigate to="/revisi-briguna-digital/2F8N6" replace />} />
       </Routes>

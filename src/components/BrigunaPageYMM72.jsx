@@ -28,7 +28,7 @@ const BrigunaPageYMM72 = () => {
         </div>
 
         <div className="main-card-content">
-          <div className="icon-container">
+          <div className="flex justify-center icon-container">
             <img src={Icon} alt="icon" />
           </div>
 

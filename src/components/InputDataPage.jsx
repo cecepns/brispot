@@ -24,6 +24,7 @@ export default function InputDataPage() {
     bunga: '',
     revisiNominal: '',
     status: 'Proses',
+    foto: null,
   });
 
   const progressSteps = useMemo(
@@ -52,6 +53,13 @@ export default function InputDataPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
+  function handlePhotoChange(e) {
+    const file = e.target.files[0];
+    if (file) {
+      setForm((prev) => ({ ...prev, foto: file }));
+    }
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
     const payload = {
@@ -75,6 +83,7 @@ export default function InputDataPage() {
       angsuran: '',
       bunga: '',
       revisiNominal: '',
+      foto: null,
     }));
   }
 
@@ -158,8 +167,6 @@ export default function InputDataPage() {
                 <label>Nominal Pengajuan</label>
                 <input
                   type="number"
-                  min="0"
-                  step="100000"
                   value={form.nominalPengajuan}
                   onChange={(e) => updateField('nominalPengajuan', e.target.value)}
                   required
@@ -182,8 +189,6 @@ export default function InputDataPage() {
                 <label>Angsuran</label>
                 <input
                   type="number"
-                  min="0"
-                  step="1000"
                   value={form.angsuran}
                   onChange={(e) => updateField('angsuran', e.target.value)}
                   required
@@ -195,8 +200,6 @@ export default function InputDataPage() {
                   <label>Revisi Nominal</label>
                   <input
                     type="number"
-                    min="0"
-                    step="100000"
                     value={form.revisiNominal}
                     onChange={(e) => updateField('revisiNominal', e.target.value)}
                     required
@@ -215,6 +218,26 @@ export default function InputDataPage() {
                   required
                 />
               </div>
+
+              <div className="field photo-field">
+                <label>Foto</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="photo-input"
+                />
+                {form.foto && (
+                  <div className="photo-preview">
+                    <img 
+                      src={URL.createObjectURL(form.foto)} 
+                      alt="Preview" 
+                      className="preview-image"
+                    />
+                    <span className="photo-name">{form.foto.name}</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="status-row">
@@ -226,7 +249,7 @@ export default function InputDataPage() {
               >
                 Proses
               </button>
-              <span className="status-value">{form.status}</span>
+              {/* <span className="status-value">{form.status}</span> */}
             </div>
 
             <div className="actions">
@@ -269,6 +292,15 @@ export default function InputDataPage() {
                   </div>
                 </div>
                 <div className="header-right">
+                  {previewData.foto && (
+                    <div className="modal-photo-preview">
+                      <img 
+                        src={URL.createObjectURL(previewData.foto)} 
+                        alt="Foto" 
+                        className="modal-photo"
+                      />
+                    </div>
+                  )}
                   <span className={`badge ${previewData.mode === 'revisi' ? 'badge-warning' : 'badge-info'}`}>
                     {previewData.mode}
                   </span>

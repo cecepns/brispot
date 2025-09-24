@@ -94,8 +94,8 @@ export default function InputDataPage() {
         <h1 className="header-title">BRIguna</h1>
       </header>
 
-      <div className="content">
-        <div className="mode-switch">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-2 mb-4 bg-white/10 max-w-fit rounded">
           <button
             className={`mode-btn ${mode === 'pengajuan' ? 'active' : ''}`}
             onClick={() => setMode('pengajuan')}
@@ -110,8 +110,8 @@ export default function InputDataPage() {
           </button>
         </div>
 
-        <div className="panels">
-          <form className="form-panel" onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <form className="form-panel md:col-span-2" onSubmit={handleSubmit}>
             <div className="form-grid">
               <div className="field">
                 <label>Nama</label>
@@ -260,7 +260,7 @@ export default function InputDataPage() {
             </div>
           </form>
 
-          <aside className="progress-panel">
+          <aside className="progress-panel max-h-fit">
             <h3>Progress Pengajuan</h3>
             <div className="steps">
               {progressSteps.map((label, idx) => (
@@ -280,6 +280,7 @@ export default function InputDataPage() {
             </div>
           </aside>
         </div>
+
         {showPreview && previewData && (
           <div className="modal-overlay" role="dialog" aria-modal="true">
             <div className="modal-card animate-pop">

@@ -132,7 +132,7 @@ export default function DetailPage() {
                 <img src="/icon.png" alt="BRIguna" className="brand-icon h-10 w-10" />
                 <div className="brand-text">
                   <h2 className="text-xl font-semibold">{data.nama}</h2>
-                  <span className="brand-sub text-sm text-gray-500">{data.nik}</span>
+                  <span className="brand-sub text-sm text-white">{data.nik}</span>
                 </div>
               </div>
               <div className="header-right flex items-center gap-3">

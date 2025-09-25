@@ -137,8 +137,8 @@ export default function DetailPage() {
               </div>
               <div className="header-right flex items-center gap-3">
                 {data.foto_path && (
-                  <div className="modal-photo-preview">
-                    <img src={`https://api-inventory.isavralabel.com/brispot/${data.foto_path}`} alt="Foto" className="modal-photo h-14 w-14 rounded-full object-cover" />
+                  <div className="modal-photo-preview w-14 h-14 rounded-full overflow-hidden">
+                    <img src={`https://api-inventory.isavralabel.com/brispot/${data.foto_path}`} alt="Foto" className="modal-photo w-full h-full object-cover" />
                   </div>
                 )}
                 <StatusBadge status={data.status} />

@@ -17,6 +17,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+input {
+  background-color: #fff;
+}
+
+
 body {
   margin: auto;
   background-color: #fff;

@@ -1,5 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import './InputDataPage.css';
+
+const API_BASE_URL = 'https://api-inventory.isavralabel.com/brispot/api';
 
 function StepItem({ label, active }) {
   return (
@@ -11,6 +14,8 @@ function StepItem({ label, active }) {
 }
 
 export default function InputDataPage() {
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('edit');
   const [mode, setMode] = useState('pengajuan');
   const [form, setForm] = useState({
     nama: '',
@@ -26,6 +31,8 @@ export default function InputDataPage() {
     status: 'Proses',
     foto: null,
   });
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
 
   const progressSteps = useMemo(
     () => [
@@ -38,9 +45,60 @@ export default function InputDataPage() {
     []
   );
 
+  // Load data for edit mode
+  useEffect(() => {
+    if (editId) {
+      setIsEditMode(true);
+      setLoadingData(true);
+      
+      fetch(`${API_BASE_URL}/pengajuan/${editId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch data');
+          }
+          return response.json();
+        })
+        .then(data => {
+          // In edit mode, force mode to 'revisi'
+          setMode('revisi');
+          setForm({
+            nama: data.nama || '',
+            nik: data.nik || '',
+            ttl: data.ttl || '',
+            npwp: data.npwp || '',
+            pekerjaan: data.pekerjaan || '',
+            nominalPengajuan: data.nominal_pengajuan || '',
+            jangkaWaktu: data.jangka_waktu || '',
+            angsuran: data.angsuran || '',
+            bunga: data.bunga || '',
+            revisiNominal: data.revisi_nominal || '',
+            status: data.status || 'Proses',
+            foto: null,
+          });
+          
+          // Set progress step
+          const progressIndex = progressSteps.findIndex(step => step === data.progress);
+          if (progressIndex !== -1) {
+            setActiveStepIdx(progressIndex);
+          }
+        })
+        .catch(error => {
+          console.error('Error loading data:', error);
+          setSubmitError('Gagal memuat data untuk diedit');
+        })
+        .finally(() => {
+          setLoadingData(false);
+        });
+    }
+  }, [editId, progressSteps]);
+
+
   const [activeStepIdx, setActiveStepIdx] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
   const [previewData, setPreviewData] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   function formatCurrencyId(value) {
     if (value === null || value === undefined || value === '') return '-';
@@ -60,31 +118,87 @@ export default function InputDataPage() {
     }
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    const payload = {
-      ...form,
-      mode,
-      progress: progressSteps[activeStepIdx],
-      createdAt: new Date().toISOString(),
-    };
-    setPreviewData(payload);
-    setShowPreview(true);
-    // reset minimal fields but keep mode
-    setForm((prev) => ({
-      ...prev,
-      nama: '',
-      nik: '',
-      ttl: '',
-      npwp: '',
-      pekerjaan: '',
-      nominalPengajuan: '',
-      jangkaWaktu: '',
-      angsuran: '',
-      bunga: '',
-      revisiNominal: '',
-      foto: null,
-    }));
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
+
+    try {
+      // Validate required fields
+      if (!form.nama || !form.nik || !form.ttl || !form.nominalPengajuan || !form.jangkaWaktu || !form.angsuran || !form.bunga) {
+        throw new Error('Mohon lengkapi semua field yang wajib diisi');
+      }
+
+      // Prepare form data for API submission
+      const formData = new FormData();
+      formData.append('mode', mode);
+      formData.append('nama', form.nama);
+      formData.append('nik', form.nik);
+      formData.append('ttl', form.ttl);
+      formData.append('npwp', form.npwp);
+      formData.append('pekerjaan', form.pekerjaan);
+      formData.append('nominalPengajuan', form.nominalPengajuan);
+      formData.append('jangkaWaktu', form.jangkaWaktu);
+      formData.append('angsuran', form.angsuran);
+      formData.append('bunga', form.bunga);
+      formData.append('revisiNominal', form.revisiNominal);
+      formData.append('status', form.status);
+      formData.append('progress', progressSteps[activeStepIdx]);
+      
+      if (form.foto) {
+        formData.append('foto', form.foto);
+      }
+
+      const url = isEditMode ? `${API_BASE_URL}/pengajuan/${editId}` : `${API_BASE_URL}/pengajuan`;
+      const method = isEditMode ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method: method,
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Server error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      
+      // Show success preview
+      const payload = {
+        ...form,
+        mode,
+        progress: progressSteps[activeStepIdx],
+        createdAt: new Date().toISOString(),
+        id: result.id,
+      };
+      setPreviewData(payload);
+      setShowPreview(true);
+      setSubmitSuccess(true);
+
+      // Reset form
+      setForm((prev) => ({
+        ...prev,
+        nama: '',
+        nik: '',
+        ttl: '',
+        npwp: '',
+        pekerjaan: '',
+        nominalPengajuan: '',
+        jangkaWaktu: '',
+        angsuran: '',
+        bunga: '',
+        revisiNominal: '',
+        foto: null,
+      }));
+
+    } catch (error) {
+      console.error('Submit error:', error);
+      setSubmitError(error.message || 'Terjadi kesalahan saat menyimpan data. Pastikan backend server berjalan di http://localhost:4000');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -92,23 +206,47 @@ export default function InputDataPage() {
       <header className="briguna-header">
         <img src="/icon.png" alt="BRIguna" className="header-icon" />
         <h1 className="header-title">BRIguna</h1>
+        {isEditMode && (
+          <div className="edit-badge">
+            <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm">
+              Mode Edit
+            </span>
+          </div>
+        )}
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-2 mb-4 bg-white/10 max-w-fit rounded">
+        <div className="flex justify-between items-center mb-6">
+          <div className="grid grid-cols-2 bg-white/10 max-w-fit rounded">
+            <button
+              className={`mode-btn ${mode === 'pengajuan' ? 'active' : ''}`}
+              onClick={() => { if (!isEditMode) setMode('pengajuan'); }}
+              disabled={isEditMode}
+            >
+              Pengajuan
+            </button>
+            <button
+              className={`mode-btn ${mode === 'revisi' ? 'active' : ''}`}
+              onClick={() => { if (!isEditMode) setMode('revisi'); }}
+              disabled={isEditMode}
+            >
+              Revisi
+            </button>
+          </div>
           <button
-            className={`mode-btn ${mode === 'pengajuan' ? 'active' : ''}`}
-            onClick={() => setMode('pengajuan')}
+            onClick={() => window.location.href = '/list-data'}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
           >
-            Pengajuan
-          </button>
-          <button
-            className={`mode-btn ${mode === 'revisi' ? 'active' : ''}`}
-            onClick={() => setMode('revisi')}
-          >
-            Revisi
+            Lihat Data
           </button>
         </div>
+
+        {loadingData && (
+          <div className="flex justify-center items-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-white">Memuat data...</span>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <form className="form-panel md:col-span-2" onSubmit={handleSubmit}>
@@ -242,19 +380,72 @@ export default function InputDataPage() {
 
             <div className="status-row">
               <span className="status-label">Status Pengajuan:</span>
-              <button
-                type="button"
+              <div
                 className="status-btn"
-                onClick={() => updateField('status', 'Proses')}
               >
-                Proses
-              </button>
+                {form.status || 'Proses'}
+              </div>
               {/* <span className="status-value">{form.status}</span> */}
             </div>
 
+            {submitError && (
+              <div className="error-message" style={{ 
+                background: '#fee2e2', 
+                color: '#dc2626', 
+                padding: '12px', 
+                borderRadius: '8px', 
+                marginBottom: '16px',
+                border: '1px solid #fecaca'
+              }}>
+                <strong>Error:</strong> {submitError}
+              </div>
+            )}
+
+            {submitSuccess && (
+              <div className="success-message" style={{ 
+                background: '#dcfce7', 
+                color: '#166534', 
+                padding: '12px', 
+                borderRadius: '8px', 
+                marginBottom: '16px',
+                border: '1px solid #bbf7d0'
+              }}>
+                <strong>Berhasil!</strong> Data berhasil disimpan ke database.
+              </div>
+            )}
+
             <div className="actions">
-              <button type="submit" className="primary">Simpan</button>
-              <button type="reset" className="ghost" onClick={() => window.location.reload()}>
+              <button 
+                type="submit" 
+                className="primary" 
+                disabled={isSubmitting || loadingData}
+                style={{ opacity: (isSubmitting || loadingData) ? 0.6 : 1 }}
+              >
+                {isSubmitting ? (isEditMode ? 'Mengupdate...' : 'Menyimpan...') : (isEditMode ? 'Update' : 'Simpan')}
+              </button>
+              <button 
+                type="button" 
+                className="ghost" 
+                onClick={() => {
+                  setForm((prev) => ({
+                    ...prev,
+                    nama: '',
+                    nik: '',
+                    ttl: '',
+                    npwp: '',
+                    pekerjaan: '',
+                    nominalPengajuan: '',
+                    jangkaWaktu: '',
+                    angsuran: '',
+                    bunga: '',
+                    revisiNominal: '',
+                    foto: null,
+                  }));
+                  setSubmitError(null);
+                  setSubmitSuccess(false);
+                }}
+                disabled={isSubmitting || loadingData}
+              >
                 Reset
               </button>
             </div>
@@ -375,6 +566,15 @@ export default function InputDataPage() {
 
               <div className="modal-actions">
                 <button className="ghost" onClick={() => setShowPreview(false)}>Kembali</button>
+                {/* <button 
+                  className="secondary" 
+                  onClick={() => {
+                    setShowPreview(false);
+                    window.location.href = '/list-data';
+                  }}
+                >
+                  Lihat Data
+                </button> */}
                 <button className="primary" onClick={() => setShowPreview(false)}>Selesai</button>
               </div>
             </div>

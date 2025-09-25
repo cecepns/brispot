@@ -10,12 +10,16 @@ import BrigunaPageHAD from './components/BrigunaPageHAD';
 import BrigunaPageAL9M6 from './components/BrigunaPageAL9M6';
 import BrigunaPageYMM72 from './components/BrigunaPageYMM72';
 import InputDataPage from './components/InputDataPage';
+import ListDataPage from './components/ListDataPage';
+import DetailPage from './components/DetailPage';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/input-data" element={<InputDataPage />} />
+        <Route path="/list-data" element={<ListDataPage />} />
+        <Route path="/detail/:id" element={<DetailPage />} />
         <Route path="/revisi-briguna-digital/4K7B9" element={<BrigunaPage4K7B9 />} />
         <Route path="/revisi-briguna-digital/9X3M5" element={<BrigunaPage9X3M5 />} />
         <Route path="/revisi-briguna-digital/2F8N6" element={<BrigunaPage2F8N6 />} />

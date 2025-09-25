@@ -335,7 +335,7 @@ export default function ListDataPage() {
         )}
 
         {/* Data Table */}
-        <div className="bg-white rounded-lg shadow overflow-x-hidden">
+        <div className="bg-white rounded-lg shadow overflow-x-auto">
           {loading ? (
             <div className="p-8 text-center">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>

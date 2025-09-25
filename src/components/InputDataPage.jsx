@@ -23,6 +23,7 @@ export default function InputDataPage() {
     ttl: '',
     npwp: '',
     pekerjaan: '',
+    nomorHp: '',
     nominalPengajuan: '',
     jangkaWaktu: '',
     angsuran: '',
@@ -40,7 +41,9 @@ export default function InputDataPage() {
       'BI Checking',
       'Analisis',
       'Pengiriman Link Melalui Wa',
-      'Pencairan / Revisi',
+      'Pencairan',
+      'Permintaan Revisi',
+      'Revisi Selesai',
     ],
     []
   );
@@ -67,6 +70,7 @@ export default function InputDataPage() {
             ttl: data.ttl || '',
             npwp: data.npwp || '',
             pekerjaan: data.pekerjaan || '',
+            nomorHp: data.nomor_hp || '',
             nominalPengajuan: data.nominal_pengajuan || '',
             jangkaWaktu: data.jangka_waktu || '',
             angsuran: data.angsuran || '',
@@ -138,6 +142,7 @@ export default function InputDataPage() {
       formData.append('ttl', form.ttl);
       formData.append('npwp', form.npwp);
       formData.append('pekerjaan', form.pekerjaan);
+      formData.append('nomorHp', form.nomorHp);
       formData.append('nominalPengajuan', form.nominalPengajuan);
       formData.append('jangkaWaktu', form.jangkaWaktu);
       formData.append('angsuran', form.angsuran);
@@ -185,6 +190,7 @@ export default function InputDataPage() {
         ttl: '',
         npwp: '',
         pekerjaan: '',
+        nomorHp: '',
         nominalPengajuan: '',
         jangkaWaktu: '',
         angsuran: '',
@@ -298,6 +304,18 @@ export default function InputDataPage() {
                   type="text"
                   value={form.pekerjaan}
                   onChange={(e) => updateField('pekerjaan', e.target.value)}
+                />
+              </div>
+
+              <div className="field">
+                <label>Nomor HP</label>
+                <input
+                  type="tel"
+                  inputMode="tel"
+                  placeholder="08xxxxxxxxxx"
+                  value={form.nomorHp}
+                  onChange={(e) => updateField('nomorHp', e.target.value)}
+                  required
                 />
               </div>
 

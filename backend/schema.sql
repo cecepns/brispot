@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `pengajuan` (
   `ttl` VARCHAR(255) NOT NULL,
   `npwp` VARCHAR(64) DEFAULT NULL,
   `pekerjaan` VARCHAR(255) DEFAULT NULL,
+  `nomor_hp` VARCHAR(32) DEFAULT NULL,
   `nominal_pengajuan` BIGINT DEFAULT NULL,
   `jangka_waktu` INT DEFAULT NULL,
   `angsuran` BIGINT DEFAULT NULL,

@@ -68,14 +68,14 @@ app.get('/api/pengajuan', async (req, res) => {
     const like = `%${q}%`;
 
     const [totalRows] = await pool.query(
-      'SELECT COUNT(*) AS count FROM pengajuan WHERE nama LIKE ? OR nik LIKE ? OR npwp LIKE ? OR pekerjaan LIKE ?',
-      [like, like, like, like]
+      'SELECT COUNT(*) AS count FROM pengajuan WHERE nama LIKE ? OR nik LIKE ? OR npwp LIKE ? OR pekerjaan LIKE ? OR nomor_hp LIKE ?',
+      [like, like, like, like, like]
     );
     const total = totalRows[0].count;
 
     const [rows] = await pool.query(
-      'SELECT * FROM pengajuan WHERE nama LIKE ? OR nik LIKE ? OR npwp LIKE ? OR pekerjaan LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
-      [like, like, like, like, Number(pageSize), offset]
+      'SELECT * FROM pengajuan WHERE nama LIKE ? OR nik LIKE ? OR npwp LIKE ? OR pekerjaan LIKE ? OR nomor_hp LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+      [like, like, like, like, like, Number(pageSize), offset]
     );
 
     res.json({ data: rows, meta: { total, page: Number(page), pageSize: Number(pageSize) } });
@@ -109,6 +109,7 @@ app.post('/api/pengajuan', upload.single('foto'), async (req, res) => {
       ttl: body.ttl || '',
       npwp: body.npwp || '',
       pekerjaan: body.pekerjaan || '',
+      nomor_hp: body.nomorHp || null,
       nominal_pengajuan: body.nominalPengajuan ? Number(body.nominalPengajuan) : null,
       jangka_waktu: body.jangkaWaktu ? Number(body.jangkaWaktu) : null,
       angsuran: body.angsuran ? Number(body.angsuran) : null,
@@ -121,8 +122,8 @@ app.post('/api/pengajuan', upload.single('foto'), async (req, res) => {
 
     const [result] = await pool.query(
       `INSERT INTO pengajuan
-      (mode, nama, nik, ttl, npwp, pekerjaan, nominal_pengajuan, jangka_waktu, angsuran, bunga, revisi_nominal, status, progress, foto_path)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (mode, nama, nik, ttl, npwp, pekerjaan, nomor_hp, nominal_pengajuan, jangka_waktu, angsuran, bunga, revisi_nominal, status, progress, foto_path)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         payload.mode,
         payload.nama,
@@ -130,6 +131,7 @@ app.post('/api/pengajuan', upload.single('foto'), async (req, res) => {
         payload.ttl,
         payload.npwp,
         payload.pekerjaan,
+        payload.nomor_hp,
         payload.nominal_pengajuan,
         payload.jangka_waktu,
         payload.angsuran,
@@ -167,6 +169,7 @@ app.put('/api/pengajuan/:id', upload.single('foto'), async (req, res) => {
       ttl: body.ttl ?? existing.ttl,
       npwp: body.npwp ?? existing.npwp,
       pekerjaan: body.pekerjaan ?? existing.pekerjaan,
+      nomor_hp: body.nomorHp !== undefined ? body.nomorHp : existing.nomor_hp,
       nominal_pengajuan: body.nominalPengajuan !== undefined ? Number(body.nominalPengajuan) : existing.nominal_pengajuan,
       jangka_waktu: body.jangkaWaktu !== undefined ? Number(body.jangkaWaktu) : existing.jangka_waktu,
       angsuran: body.angsuran !== undefined ? Number(body.angsuran) : existing.angsuran,
@@ -178,7 +181,7 @@ app.put('/api/pengajuan/:id', upload.single('foto'), async (req, res) => {
     };
 
     await pool.query(
-      `UPDATE pengajuan SET mode=?, nama=?, nik=?, ttl=?, npwp=?, pekerjaan=?, nominal_pengajuan=?, jangka_waktu=?, angsuran=?, bunga=?, revisi_nominal=?, status=?, progress=?, foto_path=? WHERE id=?`,
+      `UPDATE pengajuan SET mode=?, nama=?, nik=?, ttl=?, npwp=?, pekerjaan=?, nomor_hp=?, nominal_pengajuan=?, jangka_waktu=?, angsuran=?, bunga=?, revisi_nominal=?, status=?, progress=?, foto_path=? WHERE id=?`,
       [
         payload.mode,
         payload.nama,
@@ -186,6 +189,7 @@ app.put('/api/pengajuan/:id', upload.single('foto'), async (req, res) => {
         payload.ttl,
         payload.npwp,
         payload.pekerjaan,
+        payload.nomor_hp,
         payload.nominal_pengajuan,
         payload.jangka_waktu,
         payload.angsuran,

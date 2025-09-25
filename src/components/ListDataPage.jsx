@@ -118,7 +118,9 @@ function DataRow({ data, onEdit, onDelete, onView, onUpdateProgress }) {
               <option value="BI Checking">BI Checking</option>
               <option value="Analisis">Analisis</option>
               <option value="Pengiriman Link Melalui Wa">Pengiriman Link Melalui Wa</option>
-              <option value="Pencairan / Revisi">Pencairan / Revisi</option>
+              <option value="Pencairan">Pencairan</option>
+              <option value="Permintaan Revisi">Permintaan Revisi</option>
+              <option value="Revisi Selesai">Revisi Selesai</option>
             </select>
           </div>
         </div>
@@ -376,7 +378,7 @@ export default function ListDataPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-gray-200 table-responsive">
                   {data.map((item) => (
                     <DataRow
                       key={item.id}

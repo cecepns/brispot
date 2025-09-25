@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import './InputDataPage.css';
+import Logo from '../assets/logo.jpeg';
 
 const API_BASE_URL = 'https://api-inventory.isavralabel.com/brispot/api';
 
@@ -210,8 +211,8 @@ export default function InputDataPage() {
   return (
     <div className="briguna-wrapper">
       <header className="briguna-header">
-        <img src="/icon.png" alt="BRIguna" className="header-icon" />
-        <h1 className="header-title">BRIguna</h1>
+      <img src={Logo} alt="BRIguna" className="header-icon" />
+      <h1 className="header-title">Admin - BRIguna Digital</h1>
         {isEditMode && (
           <div className="edit-badge">
             <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './InputDataPage.css';
+import Logo from '../assets/logo.jpeg';
 
 const API_BASE_URL = 'https://api-inventory.isavralabel.com/brispot/api';
 
@@ -96,8 +97,8 @@ export default function DetailPage() {
   return (
     <div className="briguna-wrapper">
       <header className="briguna-header">
-        <img src="/icon.png" alt="BRIguna" className="header-icon" />
-        <h1 className="header-title">BRIguna</h1>
+        <img src={Logo} alt="BRIguna" className="header-icon" />
+        <h1 className="header-title">Admin - BRIguna Digital</h1>
       </header>
 
       <div className="max-w-5xl mx-auto px-4 py-8">

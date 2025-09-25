@@ -1,47 +1,60 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './InputDataPage.css';
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import "./InputDataPage.css";
+import Logo from '../assets/logo.jpeg';
 
-const API_BASE_URL = 'https://api-inventory.isavralabel.com/brispot/api';
+const API_BASE_URL = "https://api-inventory.isavralabel.com/brispot/api";
 
 function formatCurrencyId(value) {
-  if (value === null || value === undefined || value === '') return '-';
+  if (value === null || value === undefined || value === "") return "-";
   const numeric = Number(value);
   if (Number.isNaN(numeric)) return String(value);
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(numeric);
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(numeric);
 }
 
 function formatDate(dateString) {
-  if (!dateString) return '-';
-  return new Date(dateString).toLocaleDateString('id-ID', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
 function StatusBadge({ status }) {
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case 'selesai': return 'bg-green-100 text-green-800';
-      case 'proses': return 'bg-yellow-100 text-yellow-800';
-      case 'ditolak': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "selesai":
+        return "bg-green-100 text-green-800";
+      case "proses":
+        return "bg-yellow-100 text-yellow-800";
+      case "ditolak":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   return (
-    <span className={`px-2 py-1 max-w-fit rounded-full text-xs font-medium ${getStatusColor(status)}`}>
-      {status || 'Proses'}
+    <span
+      className={`px-2 py-1 max-w-fit rounded-full text-xs font-medium ${getStatusColor(
+        status
+      )}`}
+    >
+      {status || "Proses"}
     </span>
   );
 }
 
 function ProgressBadge({ progress }) {
   if (!progress) return null;
-  
+
   return (
     <span className="px-2 py-1 max-w-fit rounded-full text-xs font-medium bg-blue-100 text-blue-800">
       {progress}
@@ -58,32 +71,34 @@ function DataRow({ data, onEdit, onDelete, onView, onUpdateProgress }) {
         <div className="flex items-center">
           <div className="flex-shrink-0 h-10 w-10">
             {data.foto_path ? (
-              <img 
-                className="h-10 w-10 rounded-full object-cover" 
-                src={`https://api-inventory.isavralabel.com/brispot/${data.foto_path}`} 
+              <img
+                className="h-10 w-10 rounded-full object-cover"
+                src={`https://api-inventory.isavralabel.com/brispot/${data.foto_path}`}
                 alt={data.nama}
                 onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'block';
+                  e.target.style.display = "none";
+                  e.target.nextSibling.style.display = "block";
                 }}
               />
             ) : null}
-            <div 
+            <div
               className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-medium text-sm"
-              style={{ display: data.foto_path ? 'none' : 'flex' }}
+              style={{ display: data.foto_path ? "none" : "flex" }}
             >
-              {data.nama?.charAt(0)?.toUpperCase() || '?'}
+              {data.nama?.charAt(0)?.toUpperCase() || "?"}
             </div>
           </div>
           <div className="ml-4">
-            <div className="text-sm font-medium text-gray-900">{data.nama || '-'}</div>
-            <div className="text-sm text-gray-500">{data.nik || '-'}</div>
+            <div className="text-sm font-medium text-gray-900">
+              {data.nama || "-"}
+            </div>
+            <div className="text-sm text-gray-500">{data.nik || "-"}</div>
           </div>
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm text-gray-900">{data.pekerjaan || '-'}</div>
-        <div className="text-sm text-gray-500">{data.npwp || '-'}</div>
+        <div className="text-sm text-gray-900">{data.pekerjaan || "-"}</div>
+        <div className="text-sm text-gray-500">{data.npwp || "-"}</div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         <div className="text-sm font-medium text-gray-900">
@@ -109,7 +124,7 @@ function DataRow({ data, onEdit, onDelete, onView, onUpdateProgress }) {
                 if (e.target.value) {
                   onUpdateProgress(e.target.value);
                   // reset to placeholder to allow same selection again later if needed
-                  e.target.value = '';
+                  e.target.value = "";
                 }
               }}
             >
@@ -117,7 +132,9 @@ function DataRow({ data, onEdit, onDelete, onView, onUpdateProgress }) {
               <option value="Pemasukan Berkas">Pemasukan Berkas</option>
               <option value="BI Checking">BI Checking</option>
               <option value="Analisis">Analisis</option>
-              <option value="Pengiriman Link Melalui Wa">Pengiriman Link Melalui Wa</option>
+              <option value="Pengiriman Link Melalui Wa">
+                Pengiriman Link Melalui Wa
+              </option>
               <option value="Pencairan">Pencairan</option>
               <option value="Permintaan Revisi">Permintaan Revisi</option>
               <option value="Revisi Selesai">Revisi Selesai</option>
@@ -182,12 +199,12 @@ export default function ListDataPage() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
-  
+
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [dataToDelete, setDataToDelete] = useState(null);
 
@@ -195,7 +212,7 @@ export default function ListDataPage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const params = new URLSearchParams({
         q: searchQuery,
         page: currentPage.toString(),
@@ -203,9 +220,11 @@ export default function ListDataPage() {
       });
 
       const response = await fetch(`${API_BASE_URL}/pengajuan?${params}`);
-      
+
       if (!response.ok) {
-        throw new Error(`Server error: ${response.status}. Pastikan backend server berjalan di http://localhost:4000`);
+        throw new Error(
+          `Server error: ${response.status}. Pastikan backend server berjalan di http://localhost:4000`
+        );
       }
 
       const result = await response.json();
@@ -213,8 +232,11 @@ export default function ListDataPage() {
       setTotalPages(Math.ceil(result.meta.total / pageSize));
       setTotalItems(result.meta.total);
     } catch (err) {
-      console.error('Fetch error:', err);
-      setError(err.message || 'Terjadi kesalahan saat memuat data. Pastikan backend server berjalan di http://localhost:4000');
+      console.error("Fetch error:", err);
+      setError(
+        err.message ||
+          "Terjadi kesalahan saat memuat data. Pastikan backend server berjalan di http://localhost:4000"
+      );
     } finally {
       setLoading(false);
     }
@@ -246,12 +268,15 @@ export default function ListDataPage() {
     if (!dataToDelete) return;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/pengajuan/${dataToDelete.id}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/pengajuan/${dataToDelete.id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to delete data');
+        throw new Error("Failed to delete data");
       }
 
       // Refresh data
@@ -259,7 +284,7 @@ export default function ListDataPage() {
       setShowDeleteConfirm(false);
       setDataToDelete(null);
     } catch (err) {
-      console.error('Delete error:', err);
+      console.error("Delete error:", err);
       setError(err.message);
     }
   };
@@ -267,21 +292,21 @@ export default function ListDataPage() {
   const updateProgress = async (id, progress, status) => {
     try {
       const response = await fetch(`${API_BASE_URL}/pengajuan/${id}/progress`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ progress, status }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update progress');
+        throw new Error("Failed to update progress");
       }
 
       // Refresh data
       await fetchData();
     } catch (err) {
-      console.error('Update error:', err);
+      console.error("Update error:", err);
       setError(err.message);
     }
   };
@@ -289,8 +314,8 @@ export default function ListDataPage() {
   return (
     <div className="briguna-wrapper">
       <header className="briguna-header">
-        <img src="/icon.png" alt="BRIguna" className="header-icon" />
-        <h1 className="header-title">BRIguna</h1>
+        <img src={Logo} alt="BRIguna" className="header-icon" />
+        <h1 className="header-title">Admin - BRIguna Digital</h1>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -301,7 +326,7 @@ export default function ListDataPage() {
           </div>
           <div className="flex gap-3">
             <button
-              onClick={() => navigate('/input-data')}
+              onClick={() => navigate("/input-data")}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
               Tambah Data
@@ -346,7 +371,7 @@ export default function ListDataPage() {
               <p>Tidak ada data ditemukan</p>
               {searchQuery && (
                 <button
-                  onClick={() => setSearchQuery('')}
+                  onClick={() => setSearchQuery("")}
                   className="mt-2 text-blue-600 hover:text-blue-800"
                 >
                   Hapus filter pencarian
@@ -386,7 +411,9 @@ export default function ListDataPage() {
                       onView={handleView}
                       onEdit={handleEdit}
                       onDelete={handleDelete}
-                      onUpdateProgress={(newProgress) => updateProgress(item.id, newProgress, item.status)}
+                      onUpdateProgress={(newProgress) =>
+                        updateProgress(item.id, newProgress, item.status)
+                      }
                     />
                   ))}
                 </tbody>
@@ -397,14 +424,18 @@ export default function ListDataPage() {
                 <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200">
                   <div className="flex-1 flex justify-between sm:hidden">
                     <button
-                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      onClick={() =>
+                        setCurrentPage(Math.max(1, currentPage - 1))
+                      }
                       disabled={currentPage === 1}
                       className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
                     >
                       Previous
                     </button>
                     <button
-                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      onClick={() =>
+                        setCurrentPage(Math.min(totalPages, currentPage + 1))
+                      }
                       disabled={currentPage === totalPages}
                       className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
                     >
@@ -414,44 +445,54 @@ export default function ListDataPage() {
                   <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                     <div>
                       <p className="text-sm text-gray-700">
-                        Showing{' '}
-                        <span className="font-medium">{(currentPage - 1) * pageSize + 1}</span>
-                        {' '}to{' '}
+                        Showing{" "}
+                        <span className="font-medium">
+                          {(currentPage - 1) * pageSize + 1}
+                        </span>{" "}
+                        to{" "}
                         <span className="font-medium">
                           {Math.min(currentPage * pageSize, totalItems)}
-                        </span>
-                        {' '}of{' '}
-                        <span className="font-medium">{totalItems}</span>
-                        {' '}results
+                        </span>{" "}
+                        of <span className="font-medium">{totalItems}</span>{" "}
+                        results
                       </p>
                     </div>
                     <div>
                       <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
                         <button
-                          onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                          onClick={() =>
+                            setCurrentPage(Math.max(1, currentPage - 1))
+                          }
                           disabled={currentPage === 1}
                           className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                         >
                           Previous
                         </button>
-                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                          const page = i + 1;
-                          return (
-                            <button
-                              key={page}
-                              onClick={() => setCurrentPage(page)}
-                              className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                                currentPage === page
-                                  ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                  : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                              }`}
-                            >
-                              {page}
-                            </button>
-                          );
-                        })}
+                        {Array.from(
+                          { length: Math.min(5, totalPages) },
+                          (_, i) => {
+                            const page = i + 1;
+                            return (
+                              <button
+                                key={page}
+                                onClick={() => setCurrentPage(page)}
+                                className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                                  currentPage === page
+                                    ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                                    : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            );
+                          }
+                        )}
                         <button
-                          onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                          onClick={() =>
+                            setCurrentPage(
+                              Math.min(totalPages, currentPage + 1)
+                            )
+                          }
                           disabled={currentPage === totalPages}
                           className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                         >
@@ -466,17 +507,17 @@ export default function ListDataPage() {
           )}
         </div>
 
-        
-
         {/* Delete Confirmation Modal */}
         {showDeleteConfirm && dataToDelete && (
           <div className="modal-overlay" role="dialog" aria-modal="true">
             <div className="modal-card animate-pop">
               <div className="modal-header">
-                <h2 className="text-xl font-bold text-red-600">Konfirmasi Hapus</h2>
-                <button 
-                  className="close-btn" 
-                  onClick={() => setShowDeleteConfirm(false)} 
+                <h2 className="text-xl font-bold text-red-600">
+                  Konfirmasi Hapus
+                </h2>
+                <button
+                  className="close-btn"
+                  onClick={() => setShowDeleteConfirm(false)}
                   aria-label="Tutup"
                 >
                   ✕
@@ -484,21 +525,23 @@ export default function ListDataPage() {
               </div>
               <div className="modal-body">
                 <p className="text-gray-700">
-                  Apakah Anda yakin ingin menghapus data pengajuan untuk <strong>{dataToDelete.nama}</strong>?
+                  Apakah Anda yakin ingin menghapus data pengajuan untuk{" "}
+                  <strong>{dataToDelete.nama}</strong>?
                 </p>
                 <p className="text-sm text-gray-500 mt-2">
-                  Tindakan ini tidak dapat dibatalkan dan akan menghapus semua data terkait termasuk foto.
+                  Tindakan ini tidak dapat dibatalkan dan akan menghapus semua
+                  data terkait termasuk foto.
                 </p>
               </div>
               <div className="modal-actions">
-                <button 
-                  className="ghost" 
+                <button
+                  className="ghost"
                   onClick={() => setShowDeleteConfirm(false)}
                 >
                   Batal
                 </button>
-                <button 
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg" 
+                <button
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
                   onClick={confirmDelete}
                 >
                   Hapus

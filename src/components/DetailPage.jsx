@@ -186,7 +186,7 @@ export default function DetailPage() {
                 <div className="term-info text-sm text-gray-600">Jangka Waktu <strong>{data.jangka_waktu || '-'} Bulan</strong></div>
               </div>
 
-              {data.revisi_nominal && (
+              {!!data.revisi_nominal && (
                 <div className="revision-card bg-orange-50 rounded-lg p-4 mb-6">
                   <div className="revision-title text-sm text-orange-700">Revisi</div>
                   <div className="revision-amount text-lg font-semibold text-orange-800">{formatCurrencyId(data.revisi_nominal)}</div>
